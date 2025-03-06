@@ -127,6 +127,11 @@ def main_player():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         waiting = False
+                    elif event.key == pygame.K_ESCAPE:
+                        waiting = False
+                        reRun = False
+                        pygame.quit()
+                        return
                 if event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 0 or event.button == 11:  # A/X button
                         waiting = False
@@ -142,8 +147,6 @@ def main_player():
                     if event.key == pygame.K_ESCAPE:
                         run = False
                         reRun = False
-                        # pygame.quit()
-                        # quit()
                     if event.key == pygame.K_SPACE:
                         bird.jump()
                 elif event.type == pygame.JOYDEVICEADDED:
@@ -177,7 +180,7 @@ def main_player():
                 pipes.remove(rm)
             # endregion
 
-            if bird.y + bird.img.get_height() >= constants.FLOOR:
+            if bird.y + bird.img.get_height() >= constants.FLOOR or bird.y < 0:
                 run = False
 
             bird.move()
@@ -186,7 +189,7 @@ def main_player():
             draw_window(bird, pipes, base, background)
         time.sleep(0.5)
     pygame.quit()
-    # quit()
+    return
 
 # endregion
 
