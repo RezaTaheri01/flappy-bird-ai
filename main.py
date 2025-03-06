@@ -6,7 +6,7 @@ import neat.population
 import pygame
 
 from src import constants
-from src.base import Base
+from src.base import Base, Background
 from src.pipe import Pipe
 from src.birds import Bird
 
@@ -19,26 +19,71 @@ joysticks = []
 
 score = 0
 generation = 0
+highest_score = 0
+
+# region score
+
+
+def show_score():
+    global highest_score
+    if constants.PLAYER_MODE:
+        if score > highest_score:
+            save_high_score(score)
+            highest_score = score
+
+    score_str = str(score)
+    digit_width = constants.SCORE_IMGS[0].get_width()
+    count = len(score_str)
+
+    # Calculate starting x position to center the score
+    start_x = constants.WIN_WIDTH // 2 - (digit_width * count) // 2
+
+    # Draw each digit in sequence
+    for i, char in enumerate(score_str):
+        digit = int(char)
+        WIN.blit(constants.SCORE_IMGS[digit], (start_x + i * digit_width, 10))
+
+
+# Load high score from file
+def load_high_score():
+    if os.path.exists(constants.HIGH_SCORE_FILE):
+        with open(constants.HIGH_SCORE_FILE, "r") as file:
+            return int(file.read().strip())
+    return 0  # Default high score if file doesn't exist
+
+
+# Save high score to file
+def save_high_score(score):
+    with open(constants.HIGH_SCORE_FILE, "w") as file:
+        file.write(str(score))
+
+
+# endregion
+
 
 # region player
 
 
-def draw_window(bird: Bird, pipes: Pipe, base: Base):
-    WIN.blit(constants.BG_IMG, (0, constants.FLOOR - constants.WIN_HEIGHT))
+def draw_window(bird: Bird, pipes: Pipe, base: Base, bg: Background, refresh=True):
+    # WIN.blit(constants.BG_IMG, (0, constants.FLOOR - constants.WIN_HEIGHT))
+    bg.draw(WIN)
+
+    # show score(draw before pipe => score display under pipes)
+    show_score()
 
     for pipe in pipes:
         pipe.draw(WIN)
 
-    # score
-    score_label = constants.STAT_FONT.render(
-        "Score: " + str(score), 1, (255, 255, 255))
-    WIN.blit(score_label, ((constants.WIN_WIDTH // 2) -
-             (score_label.get_width() // 2), 10))
+    # highest score
+    highest_label = constants.NEAT_FONT.render(
+        "Record: " + str(highest_score), 1, (255, 255, 255))
+    WIN.blit(highest_label, (10, 10))
 
     base.draw(WIN)
 
     bird.draw(WIN)
-    pygame.display.update()
+    if refresh:
+        pygame.display.update()
 
 
 def main_player():
@@ -48,10 +93,43 @@ def main_player():
         score = 0
         bird = Bird(constants.BIRD_X, constants.BIRD_Y)
         base = Base(constants.FLOOR)
+        background = Background()
         pipes = [Pipe(constants.PIPE_GAP_VERTICALLY)]
 
         # set the while loop speed
         clock = pygame.time.Clock()
+
+        # Wait for player to press a key to start
+        waiting = True
+        while waiting:
+            clock.tick(constants.FPS)
+            WIN.fill((0, 0, 0))  # Clear screen (optional)
+
+            draw_window(bird, pipes, base, background, False)
+
+            start_label = constants.NEAT_FONT.render(
+                "Press SPACE to start", 1, (255, 255, 255)
+            )
+            WIN.blit(start_label, (constants.WIN_WIDTH // 2 -
+                     start_label.get_width() // 2, constants.WIN_HEIGHT // 2))
+            
+            background.move()
+            base.move()
+
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                    reRun = False
+                    pygame.quit()
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        waiting = False
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 0 or event.button == 11:  # A/X button
+                        waiting = False
 
         run = True
         while run:
@@ -104,7 +182,8 @@ def main_player():
 
             bird.move()
             base.move()
-            draw_window(bird, pipes, base)
+            background.move()
+            draw_window(bird, pipes, base, background)
         time.sleep(0.5)
     pygame.quit()
     # quit()
@@ -117,14 +196,12 @@ class ScoreReachedException(Exception):
     pass
 
 
-def draw_window_ai(birds, pipes, base):
-    WIN.blit(constants.BG_IMG, (0, 0))
+def draw_window_ai(birds, pipes, base, bg):
+    # WIN.blit(constants.BG_IMG, (0, 0))
+    bg.draw(WIN)
 
     # score
-    score_label = constants.STAT_FONT.render(
-        "Score: " + str(score), 1, (255, 255, 255))
-    WIN.blit(score_label, ((constants.WIN_WIDTH // 2) -
-             (score_label.get_width() // 2), 10))
+    show_score()
 
     for pipe in pipes:
         pipe.draw(WIN)
@@ -164,6 +241,7 @@ def eval_genomes(genomes, config):
         ge.append(g)
 
     base = Base(constants.FLOOR)
+    bg = Background()
     pipes = [Pipe(constants.PIPE_GAP_VERTICALLY_AI)]
 
     # set the while loop speed
@@ -192,7 +270,7 @@ def eval_genomes(genomes, config):
             run = False
             break
 
-        # give each bird a fitness of 0.1 for each frame it stays alive
+        # give each bird a fitness of BONUS_FITNESS for each frame it stays alive
         for x, bird in enumerate(birds):
             ge[x].fitness += constants.BONUS_FITNESS
             bird.move()
@@ -244,7 +322,7 @@ def eval_genomes(genomes, config):
                 ge.pop(i)
 
         base.move()
-        draw_window_ai(birds, pipes, base)
+        draw_window_ai(birds, pipes, base, bg)
 
         # break if score gets large enough
         if score >= constants.SCORE_LIMIT:
@@ -283,6 +361,7 @@ def run(config_file):
 
 if __name__ == "__main__":
     if constants.PLAYER_MODE:
+        highest_score = load_high_score()
         main_player()
     else:
         local_dir = os.path.dirname(__file__)
