@@ -66,12 +66,11 @@ def main_player():
                         reRun = False
                         pygame.quit()
                         quit()
+                    if event.key == pygame.K_SPACE:
+                        bird.jump()
                 elif event.type == pygame.JOYDEVICEADDED:
                     joy = pygame.joystick.Joystick(event.device_index)
                     joysticks.append(joy)
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        bird.jump()
                 elif event.type == pygame.JOYBUTTONDOWN:
                     print(event.button)
                     if event.button == 0 or event.button == 11:  # press A/X button OR Up
