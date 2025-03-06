@@ -60,6 +60,12 @@ def main_player():
                 if event.type == pygame.QUIT:
                     run = False
                     reRun = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                        reRun = False
+                        pygame.quit()
+                        quit()
                 elif event.type == pygame.JOYDEVICEADDED:
                     joy = pygame.joystick.Joystick(event.device_index)
                     joysticks.append(joy)
@@ -103,12 +109,14 @@ def main_player():
         time.sleep(0.5)
     pygame.quit()
     quit()
+
 # endregion
 
 
 # region neat
 class ScoreReachedException(Exception):
     pass
+
 
 def draw_window_ai(birds, pipes, base):
     WIN.blit(constants.BG_IMG, (0, 0))
@@ -121,15 +129,15 @@ def draw_window_ai(birds, pipes, base):
 
     for pipe in pipes:
         pipe.draw(WIN)
-        
+
     # generation
     gen_label = constants.NEAT_FONT.render(
         "Gen: " + str(generation), 1, (255, 255, 255))
     WIN.blit(gen_label, (10, 10))
-    
+
     # alive birds counter
     birds_label = constants.NEAT_FONT.render(
-    "Alive: " + str(len(birds)), 1, (255, 255, 255))
+        "Alive: " + str(len(birds)), 1, (255, 255, 255))
     WIN.blit(birds_label, (10, 50))
 
     base.draw(WIN)
@@ -171,7 +179,11 @@ def eval_genomes(genomes, config):
                 run = False
                 pygame.quit()
                 quit()
-
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                    pygame.quit()
+                    quit()
         pipe_ind = 0
         if len(birds) > 0:
             # determine whether to use the first or second
@@ -238,7 +250,8 @@ def eval_genomes(genomes, config):
         # break if score gets large enough
         if score >= constants.SCORE_LIMIT:
             pickle.dump(nets[0], open("best.pickle", "wb"))
-            raise ScoreReachedException(f"Score reached {constants.SCORE_LIMIT} — stopping training!")
+            raise ScoreReachedException(
+                f"Score reached {constants.SCORE_LIMIT} — stopping training!")
 
 
 def run(config_file):
