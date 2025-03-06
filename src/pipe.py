@@ -8,10 +8,10 @@ class Pipe:
     VEL = constants.BASE_PIPE_VELOCITY
     PIPE_IMG = constants.PIPE_IMG
 
-    def __init__(self, x):
+    def __init__(self, x, gap=GAP):
         self.x = x
         self.height = 0
-        self.gap = 200
+        self.gap = gap
 
         self.top = 0
         self.bottom = 0
@@ -29,7 +29,7 @@ class Pipe:
         """
         self.height = random.randrange(50, 450)
         self.top = self.height - self.PIPE_TOP.get_height()
-        self.bottom = self.height + self.GAP
+        self.bottom = self.height + self.gap
         
     def move(self):
         """

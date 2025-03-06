@@ -3,7 +3,7 @@ import os
 
 pygame.font.init()  # init font
 
-PLAYER_MODE = True
+PLAYER_MODE = False
 
 WIN_WIDTH = 550
 WIN_HEIGHT = 800
@@ -49,3 +49,11 @@ FPS = 30
 
 
 
+# NEAT
+FPS_AI = 60
+NEAT_FONT = pygame.font.SysFont("comicsans", 25)
+PIPE_GAP_VERTICALLY_AI = 600
+PIPE_GAP_AI = 125
+NEGATIVE_FITNESS = -2
+POSITIVE_FITNESS = 3
+BONUS_FITNESS = 0.05
