@@ -4,7 +4,7 @@ import random
 
 
 class Pipe:
-    GAP = constants.PIPE_GAP
+    GAP = constants.PIPE_GAP if constants.PLAYER_MODE else constants.PIPE_GAP_AI
     VEL = constants.BASE_PIPE_VELOCITY
     PIPE_IMG = constants.PIPE_IMG
 

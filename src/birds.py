@@ -7,7 +7,7 @@ class Bird:
     ROTATION_VELOCITY = constants.ROTATION_VELOCITY
     ANIMATION_TIME = constants.ANIMATION_TIME
     MAX_ROTATION = constants.MAX_ROTATION
-    JUMP_VEL = constants.JUMP_VEL
+    JUMP_VEL = constants.JUMP_VEL if constants.PLAYER_MODE else constants.JUMP_VEL_AI
 
     def __init__(self, x, y):
         self.x = x
@@ -30,8 +30,12 @@ class Bird:
 
         d = self.vel * self.tick_count + 1.5 * self.tick_count ** 2
 
-        if d >= constants.BIRD_DOWN:  # more than 15 pixels
-            d = constants.BIRD_DOWN
+        if constants.PLAYER_MODE:
+            if d >= constants.BIRD_DOWN:  # more than BIRD_DOWN pixels
+                d = constants.BIRD_DOWN
+        else:
+            if d >= constants.BIRD_DOWN_AI:  # more than BIRD_DOWN_AI pixels
+                d = constants.BIRD_DOWN_AI 
 
         if d < 0:
             d -= 2

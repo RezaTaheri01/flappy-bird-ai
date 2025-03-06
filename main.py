@@ -107,6 +107,8 @@ def main_player():
 
 
 # region neat
+class ScoreReachedException(Exception):
+    pass
 
 def draw_window_ai(birds, pipes, base):
     WIN.blit(constants.BG_IMG, (0, 0))
@@ -141,6 +143,7 @@ def draw_window_ai(birds, pipes, base):
 def eval_genomes(genomes, config):
     global score, generation
     score = 0
+    generation += 1
 
     nets = []
     ge = []
@@ -154,7 +157,7 @@ def eval_genomes(genomes, config):
         ge.append(g)
 
     base = Base(constants.FLOOR)
-    pipes = [Pipe(constants.PIPE_GAP_VERTICALLY_AI, constants.PIPE_GAP_AI)]
+    pipes = [Pipe(constants.PIPE_GAP_VERTICALLY_AI)]
 
     # set the while loop speed
     clock = pygame.time.Clock()
@@ -176,7 +179,6 @@ def eval_genomes(genomes, config):
                 pipe_ind = 1
         else:
             run = False
-            generation += 1
             break
 
         # give each bird a fitness of 0.1 for each frame it stays alive
@@ -217,7 +219,7 @@ def eval_genomes(genomes, config):
             score += 1
             for g in ge:
                 g.fitness += constants.POSITIVE_FITNESS
-            pipes.append(Pipe(constants.PIPE_GAP_VERTICALLY, constants.PIPE_GAP_AI))
+            pipes.append(Pipe(constants.PIPE_GAP_VERTICALLY))
 
         for rm in remove:
             pipes.remove(rm)
@@ -234,9 +236,9 @@ def eval_genomes(genomes, config):
         draw_window_ai(birds, pipes, base)
 
         # break if score gets large enough
-        if score > 100:
+        if score >= constants.SCORE_LIMIT:
             pickle.dump(nets[0], open("best.pickle", "wb"))
-            break
+            raise ScoreReachedException(f"Score reached {constants.SCORE_LIMIT} — stopping training!")
 
 
 def run(config_file):
