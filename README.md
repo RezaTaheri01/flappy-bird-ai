@@ -2,6 +2,8 @@
 
 This project is a Flappy Bird clone built with Python and Pygame, featuring both a player-controlled mode and an AI mode powered by the NEAT (NeuroEvolution of Augmenting Topologies) algorithm.
 
+![Image](https://github.com/user-attachments/assets/023ea212-e321-4eb7-acd9-f5e262ec3749)
+
 ## Features
 
 - **Player Mode:** Control the bird manually using the spacebar or a joystick button.
@@ -78,7 +80,7 @@ The NEAT algorithm's settings are in the `config-feedforward.txt` file. You can 
 
 ## Saving the Best Model
 
-When the AI reaches a score of 100, the best-performing neural network is saved as `best.pickle`.
+When the AI reaches a specific score(defined in src/constants.py), the best-performing neural network is saved as `best.pickle`.
 
 ## Acknowledgments
 
