@@ -64,15 +64,15 @@ def main_player():
                     if event.key == pygame.K_ESCAPE:
                         run = False
                         reRun = False
-                        pygame.quit()
-                        quit()
+                        # pygame.quit()
+                        # quit()
                     if event.key == pygame.K_SPACE:
                         bird.jump()
                 elif event.type == pygame.JOYDEVICEADDED:
                     joy = pygame.joystick.Joystick(event.device_index)
                     joysticks.append(joy)
                 elif event.type == pygame.JOYBUTTONDOWN:
-                    print(event.button)
+                    # print(event.button)
                     if event.button == 0 or event.button == 11:  # press A/X button OR Up
                         bird.jump()
 
@@ -107,7 +107,7 @@ def main_player():
             draw_window(bird, pipes, base)
         time.sleep(0.5)
     pygame.quit()
-    quit()
+    # quit()
 
 # endregion
 
@@ -177,12 +177,12 @@ def eval_genomes(genomes, config):
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
-                quit()
+                # quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
                     pygame.quit()
-                    quit()
+                    # quit()
         pipe_ind = 0
         if len(birds) > 0:
             # determine whether to use the first or second
