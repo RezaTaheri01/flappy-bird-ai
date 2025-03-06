@@ -2,13 +2,15 @@
 
 This project is a Flappy Bird clone built with Python and Pygame, featuring both a player-controlled mode and an AI mode powered by the NEAT (NeuroEvolution of Augmenting Topologies) algorithm.
 
-![Image](https://github.com/user-attachments/assets/023ea212-e321-4eb7-acd9-f5e262ec3749)
-
 ## Features
 
 - **Player Mode:** Control the bird manually using the spacebar or a joystick button.
 - **AI Mode:** Train an AI to play Flappy Bird using NEAT.
 - **Joystick Support:** Play with a connected game controller.
+
+
+<video src="https://github.com/user-attachments/assets/cf74cb9a-773d-4f67-be27-abba9ac287ab" />|<video src="https://github.com/user-attachments/assets/46caea81-3066-4ca3-8dd2-e25168c01e0d"/>
+
 
 ## Installation
 
