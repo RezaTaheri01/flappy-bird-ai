@@ -1,7 +1,6 @@
 import os
 import pickle
 import neat
-import time
 import neat.population
 import pygame
 
@@ -187,7 +186,7 @@ def main_player():
             base.move()
             background.move()
             draw_window(bird, pipes, base, background)
-        time.sleep(0.5)
+        pygame.time.wait(500) # 0.5s
     pygame.quit()
     return
 
@@ -354,7 +353,7 @@ def run(config_file):
     # p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes, 50)
+    winner = p.run(eval_genomes, constants.MAX_GEN)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
