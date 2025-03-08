@@ -328,7 +328,9 @@ def eval_genomes(genomes, config):
 
         # break if score gets large enough
         if score >= constants.SCORE_LIMIT:
-            pickle.dump(nets[0], open("best.pickle", "wb"))
+            best_genome = max(ge, key=lambda g: g.fitness)
+            best_net = neat.nn.FeedForwardNetwork.create(best_genome, config)
+            pickle.dump(best_net, open("best.pickle", "wb"))
             raise ScoreReachedException(
                 f"Score reached {constants.SCORE_LIMIT} — stopping training!")
 
