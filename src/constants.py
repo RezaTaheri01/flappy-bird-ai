@@ -38,7 +38,8 @@ ROTATION_VELOCITY = 15
 ANIMATION_TIME = 5
 MAX_ROTATION = 20
 JUMP_VEL = -9
-BIRD_DOWN = 16
+GRAVITY = 1.1  # Added gravity constant
+TERMINAL_VEL = 16  # Added terminal velocity
 
 PIPE_X = 450
 PIPE_GAP = 200
@@ -67,7 +68,7 @@ POSITIVE_FITNESS = 3
 BONUS_FITNESS = 0.1
 
 JUMP_VEL_AI = -9
-BIRD_DOWN_AI = 16
+TERMINAL_VEL_AI = 16  # Added terminal velocity
 
 SCORE_LIMIT = 75
 

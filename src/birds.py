@@ -8,19 +8,20 @@ class Bird:
     ANIMATION_TIME = constants.ANIMATION_TIME
     MAX_ROTATION = constants.MAX_ROTATION
     JUMP_VEL = constants.JUMP_VEL if constants.PLAYER_MODE else constants.JUMP_VEL_AI
+    GRAVITY = constants.GRAVITY # Added gravity constant
+    TERMINAL_VEL = constants.TERMINAL_VEL  # Added terminal velocity
 
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.vel = 0
-        self.tilt = 0  # !
-        self.img_count = 0  # change image base on Animation Time
-        self.tick_count = 0  # !
+        self.tilt = 0
+        self.img_count = 0
+        self.tick_count = 0
         self.height = self.y
         self.img = self.IMGS[0]
 
     def jump(self):
-        # Top Left: (0, 0) so move up should be negative
         self.vel = self.JUMP_VEL
         self.tick_count = 0
         self.height = self.y
@@ -28,25 +29,34 @@ class Bird:
     def move(self):
         self.tick_count += 1
 
-        d = self.vel * self.tick_count + 1.5 * self.tick_count ** 2
+        # Apply gravity with smoothing
+        self.vel += self.GRAVITY
+        if self.vel > self.TERMINAL_VEL:
+            self.vel = self.TERMINAL_VEL
+            
+        d = self.vel
 
         if constants.PLAYER_MODE:
-            if d >= constants.BIRD_DOWN:  # more than BIRD_DOWN pixels
-                d = constants.BIRD_DOWN
+            if d >= constants.TERMINAL_VEL:
+                d = constants.TERMINAL_VEL
         else:
-            if d >= constants.BIRD_DOWN_AI:  # more than BIRD_DOWN_AI pixels
-                d = constants.BIRD_DOWN_AI 
-
-        if d < 0:
-            d -= 2
+            if d >= constants.TERMINAL_VEL_AI:
+                d = constants.TERMINAL_VEL_AI
 
         self.y += d
 
+        # Smoother tilt transitions
+        target_tilt = 0
         if d < 0 or self.y < self.height + 50:
-            if self.tilt < self.MAX_ROTATION:
-                self.tilt = self.MAX_ROTATION
-        elif self.tilt > -90:
-            self.tilt -= self.ROTATION_VELOCITY
+            target_tilt = self.MAX_ROTATION
+        else:
+            target_tilt = min(-30, -self.vel * 2)  # Tilt based on velocity
+
+        # Smooth tilt interpolation
+        if self.tilt < target_tilt:
+            self.tilt += min(self.ROTATION_VELOCITY, target_tilt - self.tilt)
+        elif self.tilt > target_tilt:
+            self.tilt -= min(self.ROTATION_VELOCITY, self.tilt - target_tilt)
 
     def draw(self, win):
         def blitRotateCenter(surf, image, topleft, angle):
@@ -66,23 +76,23 @@ class Bird:
 
         self.img_count += 1
 
-        if self.img_count < self.ANIMATION_TIME:
+        # Smoother animation transitions
+        cycle = self.ANIMATION_TIME * 4
+        frame = (self.img_count % cycle) // self.ANIMATION_TIME
+        
+        if frame == 0:
             self.img = self.IMGS[0]
-        elif self.img_count < self.ANIMATION_TIME * 2:
+        elif frame == 1:
             self.img = self.IMGS[1]
-        elif self.img_count < self.ANIMATION_TIME * 3:
+        elif frame == 2:
             self.img = self.IMGS[2]
-        elif self.img_count < self.ANIMATION_TIME * 4:
+        elif frame == 3:
             self.img = self.IMGS[1]
-        elif self.img_count == self.ANIMATION_TIME * 4 + 1:
-            self.img = self.IMGS[0]
-            self.img_count = 0
 
         if self.tilt <= -80:
             self.img = self.IMGS[1]
             self.img_count = self.ANIMATION_TIME * 2
 
-        # tilt the bird
         blitRotateCenter(win, self.img, (self.x, self.y), self.tilt)
 
     def get_mask(self):

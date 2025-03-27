@@ -186,6 +186,32 @@ def main_player():
             base.move()
             background.move()
             draw_window(bird, pipes, base, background)
+
+        # Death animation
+        initial_tilt = bird.tilt
+        target_tilt = 180  # Full rotation
+        fall_speed = 0
+        rotation_progress = 0
+        rotation_speed = 5  # Degrees per frame
+
+        while bird.y + bird.img.get_height() <= constants.FLOOR:
+            clock.tick(constants.FPS)
+            
+            # Smooth rotation
+            if rotation_progress < 1:
+                rotation_progress += rotation_speed / target_tilt
+                bird.tilt = initial_tilt + (target_tilt * rotation_progress)
+            
+            # Smooth falling with acceleration
+            fall_speed += constants.GRAVITY * 0.7  # Reduced gravity for smoother fall
+            if fall_speed > constants.TERMINAL_VEL:
+                fall_speed = constants.TERMINAL_VEL
+            
+            bird.y += fall_speed
+            # background.move()
+            # base.move()
+            draw_window(bird, pipes, base, background)
+
         pygame.time.wait(500) # 0.5s
     pygame.quit()
     return
